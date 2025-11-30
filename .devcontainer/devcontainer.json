@@ -5,8 +5,13 @@
         "context": "."
     },
     "runArgs": [
-        "--name=aoc2025"
+        "--name=aoc2025",
+        "--init"
     ],
+
+    "init": true,
+    "capAdd": ["SYS_PTRACE"],
+    "securityOpt": ["seccomp=unconfined"],
 
     "features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {}
