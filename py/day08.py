@@ -7,6 +7,9 @@ import math
 # "216,146,977", "819,987,18", "117,168,530", "805,96,715", "346,949,466",
 # "970,615,88", "941,993,340", "862,61,35", "984,92,344", "425,690,689",
 # ]
+# part1_range = 10
+
+part1_range = 1000
 with open(f'../input/day08-input', 'r') as file:
     lines = [line.strip() for line in file.readlines()]
 
@@ -25,12 +28,19 @@ for i,(x0,y0,z0) in enumerate(coords):
 dists.sort(key=lambda x: x[0])
 
 # Build up chains of closest pairings
+part1, part2 = 0, 0
 chains = list[set[tuple[int,int,int]]]()
-for _,c1,c2 in dists[:1000]:
+for i,(_,c1,c2) in enumerate(dists):
     done = False
     must_remove = False
 
     for ci,chain in enumerate(chains):
+        # Part 2 - find last pair to make the complete chain
+        if len(chain) == len(coords)-1:
+            # Last junction box coming up
+            # One or other end of this pair must already be in the chain
+            part2 = c1[0] * c2[0]
+
         if c1 in chain or c2 in chain:
             if not done:
                 # Chain is a set() so we can try to add both elements without increasing the size
@@ -41,7 +51,7 @@ for _,c1,c2 in dists[:1000]:
             else:
                 # We've found a second chain that contains one of the elements.
                 # We need to merge this chain into the previous chain, then delete
-                # the this one. Don't delete it while we're iterating through them
+                # this one. Don't delete it while we're iterating through them
                 # though.
                 target_chain.update(chain)
                 to_remove = ci
@@ -54,8 +64,11 @@ for _,c1,c2 in dists[:1000]:
         # Neither end is in an existing chain so start a new one
         chains.append(set([c1,c2]))
 
-# Sort them by chain length
-chains.sort(key=lambda x: len(x), reverse=True)
+    # Part 1
+    if i == part1_range-1:
+        # Sort them by chain length
+        chains.sort(key=lambda x: len(x), reverse=True)
+        part1 = math.prod([len(chain) for chain in chains[:3]])
 
-part1 = math.prod([len(chain) for chain in chains[:3]])
 print("Part 1:", part1)
+print("Part 2:", part2)
